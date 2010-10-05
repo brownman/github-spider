@@ -28,6 +28,8 @@ var github = new GitHubApi(true);
 function spider() {
 	this.visited = {};
 
+	this.structure = [];
+
 	this.maxVisited = 60;
 	this.maxDepth = 1;
 
@@ -37,7 +39,12 @@ function spider() {
 
 	this.delay1 = 2000;
 
-	this.followerQueue = [];
+	this.nodes = {};
+
+
+	//=================================================================
+	//=================================================================
+
 
 	this.newFollowers = function(user,depth,followers) {
 
@@ -61,7 +68,30 @@ function spider() {
 				setTimeout(function(){context.newFollowers(user,depth,followers);},1000);//recall when it's not so crowded
 				return;
 			} else {
-				this.limitedRun(followers.pop(),depth+1);
+				var u = followers.pop();
+
+				if(!this.nodes[user]) {
+
+					this.nodes[user] = {
+						"id": user,
+						"name": user,
+						"data": {
+							"$type": "square",
+							"some key":"some value"
+						},
+						adjacencies: []
+					};
+
+				};
+
+				this.nodes[user].adjacencies.push({
+					"nodeTo": u,
+					"data": {
+						"weight": 1
+					}
+				});
+
+				this.limitedRun(u,depth+1);
 			};
 
 		};
@@ -109,10 +139,10 @@ function spider() {
 
 
 			if(followers) {
-				console.log("followers of [" + user +"]:"+ followers);
+				//console.log("followers of [" + user +"]:"+ followers);
 				context.emit("gotNewFollowers",user,depth,followers);
 			} else {
-				console.log("user ["+user+"] has no followers");
+				//console.log("user ["+user+"] has no followers");
 			};
 		});
 	};
@@ -136,15 +166,26 @@ spider.prototype = new events.EventEmitter();
 github.authenticate(creds.user, creds.token);
 
 github.getUserApi().show(creds.user, function(err, user) {
-	console.log(user);
+	//console.log(user);
 
 	if(user) {
 		//if user is authenticated act
 		var s = new spider();
 		this.crtConn++;
 		s.run(creds.user,0);
+		setTimeout(function(){
+
+			var r = [];
+			for(i in s.nodes) {
+				r.push(s.nodes[i]);
+			};	
+			console.log(JSON.stringify(r));
+	
+		},8000);
 		//console.log("followers:"+s.followerOf);
 	};
 });
+
+
 
 
