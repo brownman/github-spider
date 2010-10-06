@@ -16,6 +16,10 @@
 
 var sys = require("sys");
 var creds = require("./credentials.js");
+
+var format = require("./form1.js");
+
+
 var events = require('events');
 
 var GitHubApi = require("github").GitHubApi;
@@ -41,8 +45,10 @@ function spider() {
 
 	this.nodes = {};
 
+	this.makeNode = format.makeNode;
+	this.addAdjacency = format.addAdjacency;
+	this.finalFormat = format.finalFormat;
 
-	//=================================================================
 	//=================================================================
 
 
@@ -71,26 +77,13 @@ function spider() {
 				var u = followers.pop();
 
 				if(!this.nodes[user]) {
-
-					this.nodes[user] = {
-						"id": user,
-						"name": user,
-						"data": {
-							"$type": "square",
-							"some key":"some value"
-						},
-						adjacencies: []
-					};
-
+					this.makeNode(this.nodes,user);
 				};
 
-				this.nodes[user].adjacencies.push({
-					"nodeTo": u,
-					"data": {
-						"weight": 1
-					}
-				});
+				//console.log("node content->" + this.nodes[user]);
+				//console.log("------------------------");
 
+				this.addAdjacency(this.nodes, user , u);
 				this.limitedRun(u,depth+1);
 			};
 
@@ -106,6 +99,7 @@ function spider() {
 			return;
 		};
 		this.crtConn++;
+
 		context.run(u,d);
 	};
 
@@ -175,11 +169,7 @@ github.getUserApi().show(creds.user, function(err, user) {
 		s.run(creds.user,0);
 		setTimeout(function(){
 
-			var r = [];
-			for(i in s.nodes) {
-				r.push(s.nodes[i]);
-			};	
-			console.log(JSON.stringify(r));
+			console.log(s.finalFormat(s.nodes));
 	
 		},8000);
 		//console.log("followers:"+s.followerOf);
