@@ -6,27 +6,50 @@
 
 exports.makeNode =  
 	function(nodes,user) { 
-		nodes[user] = {
-			"id": user,
-			"name": user,
-			"data": {
-			},
-			children: []
-		};
+		return;
 	};
 
 
 exports.addAdjacency =
 	function(nodes,user, u) {
 
-		console.log(user+"     "+u);
-		if(!nodes[u]) {
-			nodes[u] = this.makeNode(u);
+		if(!nodes[user]) {
+			var narray = new Array();
+			nodes[user] = {
+				"id": user,
+				"name": user,
+				"data": {
+				},
+				children: narray
+			};
 		};
 
-		nodes[user]
-		.children
-		.push( nodes[u] );
+		if(!nodes[u]) {
+			var narray = new Array();
+			nodes[u] = {
+				"id": u,
+				"name": u,
+				"data": {
+				},
+				children: narray
+			};
+		};
+
+		if(user == u) return;
+
+
+		var i = 0;
+		for(i = 0; i < nodes[user].children.length ; i++){
+
+			if(nodes[user].children[i].id == u){
+				return;
+			};
+
+		};
+
+		//console.log(user+ "         " + u);
+
+		nodes[user].children.push( nodes[u] );
 	};
 
 
@@ -37,6 +60,5 @@ exports.finalFormat =
 			for(i in nodes) {
 				r.push(nodes[i]);
 			}; 
-			debugger;
-			return JSON.stringify(nodes[0]);
+			return JSON.stringify(nodes["wsdookadr"]);
 	}

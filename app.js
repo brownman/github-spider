@@ -46,10 +46,10 @@ function spider() {
 
 	this.nodes = {};
 
+	//=================================================================
 	this.makeNode = format.makeNode;
 	this.addAdjacency = format.addAdjacency;
 	this.finalFormat = format.finalFormat;
-
 	//=================================================================
 
 
@@ -83,6 +83,11 @@ function spider() {
 
 				//console.log("node content->" + this.nodes[user]);
 				//console.log("------------------------");
+
+				if(!u) {
+					console.log("inside app.js");
+					process.exit(-1);
+				};
 
 				this.addAdjacency(this.nodes, user , u);
 				this.limitedRun(u,depth+1);
