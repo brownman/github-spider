@@ -36,7 +36,7 @@ function spider() {
 	this.structure = [];
 
 	this.maxVisited = 60;
-	this.maxDepth = 1;
+	this.maxDepth = 2;
 
 	this.maxConn = 4;//maximum simoultaneous
 
